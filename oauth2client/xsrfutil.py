@@ -47,7 +47,7 @@ def _force_bytes(s):
 
 
 @util.positional(2)
-def generate_token(key, user_id, action_id="", when=None):
+def generate_token(key, user_id, action_id="", when=None, digestmod=None):
   """Generates a URL-safe token for the given user, action, time tuple.
 
   Args:
@@ -62,7 +62,7 @@ def generate_token(key, user_id, action_id="", when=None):
     A string XSRF protection token.
   """
   when = _force_bytes(when or int(time.time()))
-  digester = hmac.new(_force_bytes(key))
+  digester = hmac.new(_force_bytes(key), digestmod)
   digester.update(_force_bytes(user_id))
   digester.update(DELIMITER)
   digester.update(_force_bytes(action_id))
@@ -75,7 +75,7 @@ def generate_token(key, user_id, action_id="", when=None):
 
 
 @util.positional(3)
-def validate_token(key, token, user_id, action_id="", current_time=None):
+def validate_token(key, token, user_id, action_id="", current_time=None, digestmod=None):
   """Validates that the given token authorizes the user for the action.
 
   Tokens are invalid if the time of issue is too old or if the token
@@ -107,7 +107,7 @@ def validate_token(key, token, user_id, action_id="", current_time=None):
 
   # The given token should match the generated one with the same time.
   expected_token = generate_token(key, user_id, action_id=action_id,
-                                  when=token_time)
+                                  when=token_time, digestmod=digestmod)
   if len(token) != len(expected_token):
     return False
 
