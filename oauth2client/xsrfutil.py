@@ -57,6 +57,10 @@ def generate_token(key, user_id, action_id="", when=None, digestmod=None):
       authorization for.
     when: the time in seconds since the epoch at which the user was
       authorized for this action. If not set the current time is used.
+    digestmod: A module supporting PEP 247.  *OR*
+      A hashlib constructor returning a new hash object. *OR*
+      A hash name suitable for hashlib.new().
+      Defaults to hmac default.
 
   Returns:
     A string XSRF protection token.
